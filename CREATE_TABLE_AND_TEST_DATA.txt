@@ -1,0 +1,100 @@
+DROP DATABASE IF EXISTS `Lab_4`;
+CREATE DATABASE `Lab_4`;
+USE `Lab_4`;
+
+CREATE TABLE Trip (
+	TripNumber INT PRIMARY KEY,
+    StartLocationName VARCHAR(100),
+    DestinationName VARCHAR(100)
+);
+
+CREATE TABLE Bus (
+	BusID VARCHAR(50) PRIMARY KEY,
+    Model VARCHAR(100),
+    Year INT
+);
+
+CREATE TABLE Driver (
+	DriverName VARCHAR(100) PRIMARY KEY,
+    DriverTelephoneNumber VARCHAR(100)
+);
+
+CREATE TABLE TripOffering (
+	TripNumber INT,
+    Date date,
+    ScheduledStartTime time,
+    ScheduledArrivalTime time,
+    DriverName VARCHAR(100),
+    BusID VARCHAR(100),
+	primary key (TripNumber, Date, ScheduledStartTime),
+    FOREIGN KEY (TripNumber) REFERENCES Trip(TripNumber),
+    FOREIGN KEY (DriverName) REFERENCES Driver(DriverName),
+    FOREIGN KEY (BusID) REFERENCES Bus(BusID)
+);
+
+CREATE TABLE Stop (
+	StopNumber INT PRIMARY KEY,
+    StopAddress VARCHAR(100)
+);
+
+CREATE TABLE ActualTripStopInfo (
+	TripNumber INT,
+    Date date,
+    ScheduledStartTime time,
+    StopNumber INT,
+    ScheduledArrivalTime time,
+    ActualStartTime time,
+    ActualArrivalTime time,
+    NumberOfPassengerIn INT,
+    NumberOfPassengerOut INT,
+    PRIMARY KEY (TripNumber, Date, ScheduledStartTime, StopNumber),
+    FOREIGN KEY (TripNumber, Date, ScheduledStartTime) REFERENCES TripOffering(TripNumber, Date, ScheduledStartTime),
+    FOREIGN KEY (StopNumber) REFERENCES Stop(StopNumber)
+);
+
+CREATE TABLE TripStopInfo (
+	TripNumber INT,
+    StopNumber INT,
+    SequenceNumber INT,
+    DrivingTime INT,
+    PRIMARY KEY (TripNumber, StopNumber),
+    FOREIGN KEY (TripNumber) REFERENCES Trip(TripNumber),
+    FOREIGN KEY (StopNumber) REFERENCES Stop(StopNumber)
+);
+
+INSERT INTO Trip (TripNumber, StartLocationName, DestinationName)
+VALUES
+(1, "Arcadia", "El Monte"),
+(2, "Arcadia", "Rosemead"),
+(3, "Arcadia", "Pomona"),
+(4, "Rosemead", "Arcadia");
+
+INSERT INTO Bus(BusID, Model, Year)
+VALUES
+(10, "Single-deck", 2012),
+(12, "Double-deck", 2020),
+(13, "Single-deck", 2015);
+
+INSERT INTO Driver(DriverName, DriverTelephoneNumber)
+VALUES
+("Daniel", "123-456-7890"),
+("Adam", "234-567-8901"),
+("Blake", "345-678-9012");
+
+INSERT INTO TripOffering (TripNumber, Date, ScheduledStartTime, ScheduledArrivalTime,
+DriverName, BusID)
+VALUES
+(1, "2024-05-04", '9:00', '12:00', "Daniel", 10),
+(2, "2024-05-04", '4:00', '6:00', "Adam", 12),
+(3, "2024-05-04", '1:00', '9:00', "Blake", 13),
+(4, "2024-05-07", '2:00', '3:00', "Adam", 12);
+
+INSERT INTO Stop (StopNumber, StopAddress)
+VALUES
+(1, "739 Pomona Ave."),
+(2, "34 West Gold Street"),
+(3, "509 Huntington Road");
+
+INSERT INTO TripStopInfo (TripNumber, StopNumber, SequenceNumber, DrivingTime)
+VALUES
+(1, 1, 1, 90);
